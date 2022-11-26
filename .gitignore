@@ -1,0 +1,8 @@
+*.lock
+arxiv/
+books/
+formal/
+math-dataset/
+stack-exchange/
+wiki/
+splits.json
