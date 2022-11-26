@@ -1,58 +1,14 @@
----
-annotations_creators:
-- no-annotation
-language:
-- en
-language_creators:
-- found
-license: []
-multilinguality:
-- monolingual
-pretty_name: proof-pile
-size_categories: []
-source_datasets: []
-tags:
-- math
-- mathematics
-- formal-mathematics
-task_categories:
-- text-generation
-task_ids:
-- language-modeling
----
+# Building the `proof-pile`
+Code and instructions for building the `proof-pile` from raw data downloaded from the web. This repository exists primarily for reproducibility puproses. If you wish to simply use the `proof-pile` or learn more about its composition, please see the [Huggingface datasets page](https://huggingface.co/datasets/hoskinson-center/proof-pile).  
 
-# Dataset Description
-The `proof-pile` is a 40GB pre-training dataset of mathematical text that comprises roughly 15 billion tokens. The dataset is composed of diverse sources of both informal and formal mathematics, namely
-- ArXiv.math (37GB)
-- Open-source math textbooks (50MB)
-- Formal mathematics libraries (500MB)
-    - Lean mathlib and other Lean repositories 
-    - Isabelle AFP
-    - Coq mathematical components and other Coq repositories 
-    - HOL Light
-    - set.mm
-    - Mizar Mathematical Library
-- Math Overflow and Math Stack Exchange (500MB)
-- Wiki-style sources (50MB)
-  - ProofWiki
-  - Wikipedia math articles
-- MATH dataset (6MB)
+## Instructions
+To download the data, first create an [Amazon S3](https://aws.amazon.com/s3/) account and set up the [S3cmd](https://s3tools.org/s3cmd) command line utility. This is required to download ArXiv source files. Note that using Amazon S3 will incur a fee. Next, authenticate with the [Github REST API](https://docs.github.com/en/rest/guides/getting-started-with-the-rest-api) to avoid running into the rate limit. 
 
-# Supported Tasks
-This dataset is intended to be used for pre-training language models. We envision models pre-trained on the `proof-pile` will have many downstream applications, including informal quantitative reasoning, formal theorem proving, semantic search for formal mathematics, and autoformalization. 
+Running `./download.sh` will download all the corpus's raw data using Amazon S3, the Github REST API, and standard HTTP
+requests. This script also takes care of the bulk ofpreprocessing. Finally, running `make_jsons.py` will assemble the
+full training, validation, and test sets from local files, apply some minor preprocessing, and dump the data into
+`.jsonl.gz` files. These archives are identical to the files accessed by the Huggingface dataset. 
 
-# Languages
-All informal mathematics in the `proof-pile` is written in English and LaTeX (arXiv articles in other languages are filtered out using [languagedetect](https://github.com/shuyo/language-detection/blob/wiki/ProjectHome.md)). Formal theorem proving languages represented in this dataset are Lean 3, Isabelle, Coq, HOL Light, Metamath, and Mizar.
-
- # Configurations
- The data is sorted into `"arxiv", "books", "formal", "stack-exchange", "wiki",` and `"math-dataset"` configurations. This is so that it is easy to upsample particular configurations during pre-training with the `datasets.interleave_datasets()` function. 
- 
-# Evaluation
-The version of `set.mm` in this dataset has 10% of proofs replaced with the `?` character in order to preserve a validation and test set for Metamath provers pre-trained on the `proof-pile`. The precise split can be found here: [validation](https://github.com/zhangir-azerbayev/mm-extract/blob/main/valid_decls.json) and [test](https://github.com/zhangir-azerbayev/mm-extract/blob/main/test_decls.json). 
-
-The Lean mathlib commit used in this dataset is `6313863`. Theorems created in subsequent commits can be used for evaluating Lean theorem provers. 
-
-This dataset contains only the training set of the [MATH dataset](https://github.com/hendrycks/math). However, because this dataset contains ProofWiki, the Stacks Project, Trench's Analysis, and Stein's Number Theory, models trained on it cannot be evaluated on the [NaturalProofs dataset](https://github.com/wellecks/naturalproofs). 
 
 ## Contributions
 Authors: Zhangir Azerbayev, Edward Ayers, Bartosz Piotrowski. 

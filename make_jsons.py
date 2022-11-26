@@ -45,7 +45,7 @@ def main(split):
     """
     `split` is `"train"` or `"validation"`
     """
-    arxiv = load_dataset("hoskinson-center/proof-pile", "arxiv")
+    arxiv = load_dataset("aggregator.py", "arxiv")
 
     print("PARSING ARXIV")
     print("loading into memory...")
@@ -60,7 +60,7 @@ def main(split):
     keywords = ["formal", "books", "wiki", "stack-exchange", "math-dataset"]
     
     print("LOADING REST OF DATA...")
-    data_rest = [load_dataset("hoskinson-center/proof-pile", x)[split] for x in keywords]
+    data_rest = [load_dataset("aggregator.py", x)[split] for x in keywords]
     data_rest_list = list(itertools.chain.from_iterable(data_rest))
     data_rest_list = list(map(parse_meta, tqdm(data_rest_list)))
     
